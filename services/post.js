@@ -28,7 +28,6 @@ module.exports = (app, db) => {
         })
     });
 
-  //tested
   app.get('/my-posts', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.post.findAll({ where: { user_id: req.user.id }, include: [db.comment] })
@@ -41,7 +40,6 @@ module.exports = (app, db) => {
         })
     })
 
-  //tested
   app.post('/create-post', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.post.create({
@@ -57,7 +55,6 @@ module.exports = (app, db) => {
     }
   )
 
-  //tested
   app.put('/update-post/:id', passport.authenticate('jwt', { session: false }),
     async function async(req, res) {
       let targetPost = await db.post.findOne({ where: { id: req.params.id, user_id: req.user.id } })
@@ -73,7 +70,6 @@ module.exports = (app, db) => {
     }
   )
 
-  //tested
   app.delete('/delete-post/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let targetPost = await db.post.findOne({ where: { id: req.params.id, user_id: req.user.id } })

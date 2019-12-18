@@ -1,13 +1,11 @@
 const bcrypt = require('bcryptjs')
-
-const BCRYPT_SALT_ROUNDS = 12;
-
 const passport = require('passport')
-const localStrategy = require('passport-local').Strategy
 const db = require('../../models')
+const localStrategy = require('passport-local').Strategy
 const JWTstrategy = require('passport-jwt').Strategy
 const ExtractJWT = require('passport-jwt').ExtractJwt
 
+const BCRYPT_SALT_ROUNDS = 12;
 let jwtOptions = {};
 jwtOptions.secretOrKey = 'codecamp4'
 
@@ -114,4 +112,4 @@ passport.use(
   }),
 );
 
-module.exports = jwtOptions
+module.exports = { jwtOptions, BCRYPT_SALT_ROUNDS }

@@ -3,7 +3,6 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op;
 
 module.exports = (app, db) => {
-  //tested
   app.post('/create-comment/:post_id', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.comment.create({
@@ -19,7 +18,6 @@ module.exports = (app, db) => {
         })
     })
 
-  //tested
   app.put('/update-comment/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let targetComment = await db.comment.findOne({ where: { id: req.params.id, user_id: req.user.id } })
@@ -38,7 +36,6 @@ module.exports = (app, db) => {
       }
     })
 
-  //tested
   app.delete('/delete-comment/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let targetComment = await db.comment.findOne({ where: { id: req.params.id, user_id: req.user.id } })

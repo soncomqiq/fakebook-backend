@@ -1,12 +1,9 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const jwtOptions = require('../config/passport/passport');
-const Sequelize = require('sequelize')
+const config = require('../config/passport/passport');
 const bcrypt = require('bcryptjs')
-const Op = Sequelize.Op
 
 module.exports = (app, db) => {
-  //Tested
   app.post('/registerUser', (req, res, next) => {
     passport.authenticate('register', (err, user, info) => {
       if (err) {
@@ -50,7 +47,6 @@ module.exports = (app, db) => {
     })(req, res, next);
   });
 
-  //Tested
   app.post('/loginUser', (req, res, next) => {
     passport.authenticate('login', (err, users, info) => {
       if (err) {
@@ -69,7 +65,7 @@ module.exports = (app, db) => {
             username: req.body.username,
           },
         }).then(user => {
-          const token = jwt.sign({ id: user.id, role: user.role }, jwtOptions.secretOrKey, {
+          const token = jwt.sign({ id: user.id, role: user.role }, config.jwtOptions.secretOrKey, {
             expiresIn: 3600,
           });
           res.status(200).send({
@@ -82,7 +78,6 @@ module.exports = (app, db) => {
     })(req, res, next);
   });
 
-  //Tested
   app.get('/user/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       const userId = req.user.id
@@ -98,8 +93,6 @@ module.exports = (app, db) => {
         where: { request_from_id: userId, request_to_id: req.params.id },
         raw: true,
       })
-
-      console.log({ requestFromUser, requestToUser })
 
       if (requestFromUser && requestFromUser.request_from_id == friendId && requestFromUser.status == "request") {
         res.status(200).send({ ...requestFromUser, statusName: 'รอคำตอบรับจากคุณ' })
@@ -120,14 +113,13 @@ module.exports = (app, db) => {
       }
     });
 
-  //Tested
   app.put('/change-password', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let targetUser = await db.user.findOne({ where: { id: req.user.id } })
       if (!targetUser) {
         res.status(404).send({ message: "user not found" })
       } else {
-        var salt = bcrypt.genSaltSync(12);
+        var salt = bcrypt.genSaltSync(config.BCRYPT_SALT_ROUNDS);
         var newHashedPassword = bcrypt.hashSync(req.body.newPassword, salt);
         bcrypt.compare(req.body.oldPassword, req.user.password, function (err, response) {
           console.log({ response })

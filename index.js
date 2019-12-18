@@ -5,19 +5,14 @@ const postService = require('./services/post')
 const friendService = require('./services/friend')
 const commentService = require('./services/comment')
 const db = require('./models');
-const app = express();
 const cors = require('cors')
-
-// import passport and passport-jwt modules
 const passport = require('passport');
+const app = express();
 
-// use the strategy
 app.use(passport.initialize());
 app.use(cors())
 
-// parse application/json
 app.use(bodyParser.json());
-//parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 require('./config/passport/passport')

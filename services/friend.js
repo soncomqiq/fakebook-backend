@@ -3,7 +3,6 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op;
 
 module.exports = (app, db) => {
-  //tested
   app.get('/request-list', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let requestFromIds = await db.friend.findAll({
@@ -22,7 +21,6 @@ module.exports = (app, db) => {
       res.status(200).json(requestFromUsers)
     });
 
-  //tested
   app.get('/friends-list', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let requestFromIds = await db.friend.findAll({
@@ -48,7 +46,6 @@ module.exports = (app, db) => {
       res.json(requestFromUsers)
     });
 
-  //tested
   app.get('/friend-request-to/:id', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.friend.create({
@@ -65,7 +62,6 @@ module.exports = (app, db) => {
     }
   )
 
-  //tested
   app.get('/accept-friend-request/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       let targetFriend = await db.friend.findOne({ where: { request_from_id: req.params.id, request_to_id: req.user.id, status: "request" } })
@@ -80,7 +76,6 @@ module.exports = (app, db) => {
     }
   )
 
-  //tested
   app.get('/delete-friend/:id', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.friend.destroy({
@@ -101,7 +96,6 @@ module.exports = (app, db) => {
     }
   )
 
-  //tested
   app.get('/deny-friend-request/:id', passport.authenticate('jwt', { session: false }),
     function (req, res) {
       db.friend.destroy({
