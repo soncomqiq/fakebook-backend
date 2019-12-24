@@ -35,7 +35,7 @@ module.exports = (app, db) => {
 
       const friendIds = requestFromIds.map(x => x.request_from_id).concat(requestToIds.map(x => x.request_to_id))
       let requestFromUsers = await db.user.findAll({
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', 'profile_img_url'],
         where: {
           id: {
             [Op.in]: friendIds

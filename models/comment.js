@@ -5,5 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   })
 
+  comment.associate = (models) => {
+    comment.belongsTo(models.user, { onDelete: 'CASCADE', foreignKey: 'user_id' })
+  }
+
   return comment
 }

@@ -18,10 +18,23 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   user.associate = (models) => {
-    user.hasMany(models.comment, { foreignKey: 'user_id' })
-    user.hasMany(models.post, { foreignKey: 'user_id' })
+    user.hasMany(models.comment, { onDelete: 'CASCADE', foreignKey: 'user_id' })
+    user.hasMany(models.post, { onDelete: 'CASCADE', as: 'author', foreignKey: 'user_id' })
     user.belongsToMany(user, { as: 'request_to', foreignKey: 'request_to_id', through: models.friend })
     user.belongsToMany(user, { as: 'request_from', foreignKey: 'request_from_id', through: models.friend })
   }
   return user
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

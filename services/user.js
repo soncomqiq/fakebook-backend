@@ -78,30 +78,44 @@ module.exports = (app, db) => {
     })(req, res, next);
   });
 
+  async function getUserInfo(user_id) {
+    const user = await db.user.findOne({
+      attributes: ['id', 'name'],
+      where: { id: user_id },
+      raw: true
+    })
+    return user
+  }
+
   app.get('/user/:id', passport.authenticate('jwt', { session: false }),
     async function (req, res) {
       const userId = req.user.id
       const friendId = req.params.id
       let requestFromUser = await db.friend.findOne({
-        attributes: ['request_from_id', 'status'],
+        attributes: [['request_from_id', 'id'], 'status'],
         where: { request_from_id: req.params.id, request_to_id: userId },
         raw: true,
       })
 
       let requestToUser = await db.friend.findOne({
-        attributes: ['request_to_id', 'status'],
+        attributes: [['request_to_id', 'id'], 'status'],
         where: { request_from_id: userId, request_to_id: req.params.id },
         raw: true,
       })
 
-      if (requestFromUser && requestFromUser.request_from_id == friendId && requestFromUser.status == "request") {
-        res.status(200).send({ ...requestFromUser, statusName: 'รอคำตอบรับจากคุณ' })
-      } else if (requestToUser && requestToUser.request_to_id == friendId && requestToUser.status == "request") {
-        res.status(200).send({ ...requestToUser, statusName: 'ขอเป็นเพื่อนแล้ว' })
-      } else if (requestFromUser && requestFromUser.request_from_id == friendId && requestFromUser.status == "friend") {
-        res.status(200).send({ ...requestFromUser, statusName: 'เพื่อน' })
-      } else if (requestToUser && requestToUser.request_to_id == friendId && requestToUser.status == "friend") {
-        res.status(200).send({ ...requestToUser, statusName: 'เพื่อน' })
+      if (requestFromUser && requestFromUser.id == friendId && requestFromUser.status == "request") {
+        const user = await getUserInfo(requestFromUser.id)
+        res.status(200).send({ ...user, statusName: 'รอคำตอบรับจากคุณ' })
+      } else if (requestToUser && requestToUser.id == friendId && requestToUser.status == "request") {
+        const user = await getUserInfo(requestToUser.id)
+        console.log(user)
+        res.status(200).send({ ...user, statusName: 'ขอเป็นเพื่อนแล้ว' })
+      } else if (requestFromUser && requestFromUser.id == friendId && requestFromUser.status == "friend") {
+        const user = await getUserInfo(requestFromUser.id)
+        res.status(200).send({ ...user, statusName: 'เพื่อน' })
+      } else if (requestToUser && requestToUser.id == friendId && requestToUser.status == "friend") {
+        const user = await getUserInfo(requestToUser.id)
+        res.status(200).send({ ...user, statusName: 'เพื่อน' })
       } else {
         let targetUser = await db.user.findOne({ attributes: ['id', 'name'], raw: true, where: { id: req.params.id } })
         if (!targetUser) {

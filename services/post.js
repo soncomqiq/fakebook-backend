@@ -18,7 +18,24 @@ module.exports = (app, db) => {
       const friendIds = requestFromIds.map(x => x.request_from_id).concat(requestToIds.map(x => x.request_to_id))
       const allIds = friendIds.concat([req.user.id])
 
-      db.post.findAll({ where: { user_id: { [Op.in]: allIds } }, include: [db.comment], order: [['id', 'DESC']] })
+      db.post.findAll({
+        where: { user_id: { [Op.in]: allIds } },
+        include: [
+          { model: db.user, as: 'author', attributes: ['id', 'name', ['profile_img_url', 'profilePic']] }
+          ,
+          {
+            model: db.comment,
+            as: 'commentList',
+            attributes: ['id', ['message', 'content']],
+            include: [{
+              model: db.user,
+              attributes: ['id', 'name', ['profile_img_url', 'profilePic']]
+            }],
+            raw: true
+          }
+        ],
+        order: [['id', 'DESC']]
+      })
         .then(result => {
           res.status(200).send(result)
         })
@@ -30,7 +47,24 @@ module.exports = (app, db) => {
 
   app.get('/my-posts', passport.authenticate('jwt', { session: false }),
     function (req, res) {
-      db.post.findAll({ where: { user_id: req.user.id }, include: [db.comment] })
+      db.post.findAll({
+        where: { user_id: req.user.id },
+        include: [
+          { model: db.user, as: 'author', attributes: ['id', 'name', ['profile_img_url', 'profilePic']] }
+          ,
+          {
+            model: db.comment,
+            as: 'commentList',
+            attributes: ['id', ['message', 'content']],
+            include: [{
+              model: db.user,
+              attributes: ['id', 'name', ['profile_img_url', 'profilePic']]
+            }],
+            raw: true
+          }
+        ],
+        order: [['id', 'DESC']]
+      })
         .then(result => {
           res.status(200).send(result)
         })
