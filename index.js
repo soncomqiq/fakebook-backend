@@ -4,10 +4,14 @@ const userService = require('./services/user');
 const postService = require('./services/post')
 const friendService = require('./services/friend')
 const commentService = require('./services/comment')
+const fileService = require('./services/files')
 const db = require('./models');
 const cors = require('cors')
 const passport = require('passport');
+const fileUpload = require('express-fileupload');
 const app = express();
+
+app.use(fileUpload());
 
 app.use(passport.initialize());
 app.use(cors())
@@ -19,10 +23,11 @@ require('./config/passport/passport')
 
 db.sequelize.sync({ force: false }).then(() => {
 
-  userService(app, db);
+  userService(app, db)
   postService(app, db)
   friendService(app, db)
   commentService(app, db)
+  fileService(app, db)
 
   app.get('/protected', passport.authenticate('jwt', { session: false }),
     function (req, res) {

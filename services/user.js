@@ -65,7 +65,12 @@ module.exports = (app, db) => {
             username: req.body.username,
           },
         }).then(user => {
-          const token = jwt.sign({ id: user.id, role: user.role }, config.jwtOptions.secretOrKey, {
+          const token = jwt.sign({
+            id: user.id,
+            role: user.role,
+            name: user.name,
+            profilePic: user.profile_img_url
+          }, config.jwtOptions.secretOrKey, {
             expiresIn: 3600,
           });
           res.status(200).send({
