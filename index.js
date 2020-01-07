@@ -13,6 +13,8 @@ const app = express();
 
 app.use(fileUpload());
 
+app.use(express.static('upload'))
+
 app.use(passport.initialize());
 app.use(cors())
 

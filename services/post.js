@@ -76,16 +76,36 @@ module.exports = (app, db) => {
 
   app.post('/create-post', passport.authenticate('jwt', { session: false }),
     function (req, res) {
-      db.post.create({
-        message: req.body.message,
-        image_url: req.body.image_url,
-        user_id: req.user.id
-      })
-        .then(result => res.status(201).json(result))
-        .catch(err => {
-          console.error(err);
-          res.status(400).json({ message: err.message })
+      if (!req.files) {
+        res.send({
+          status: false,
+          message: 'No file uploaded'
         })
+      } else {
+        const picture = req.files.photoPost
+        const pictureName = `${(new Date()).getTime()}.jpeg`;
+        picture.mv('./upload/' + pictureName)
+
+        res.send({
+          status: true,
+          message: 'File is uploaded',
+          data: {
+            name: pictureName,
+            size: picture.size
+          }
+        })
+
+        db.post.create({
+          message: req.body.message,
+          image_url: `http://localhost:8080/${pictureName}`,
+          user_id: req.user.id
+        })
+          .then(result => res.status(201).json(result))
+          .catch(err => {
+            console.error(err);
+            res.status(400).json({ message: err.message })
+          })
+      }
     }
   )
 
